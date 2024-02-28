@@ -137,7 +137,7 @@ async def process_amount(message: types.Message, state: FSMContext):
 
         await state.finish()
         await message.answer(
-            f"Ovqat nomi '{data['name']}"
+            f"Zayafka nomi '{data['name']}"
         )
 
 
@@ -152,7 +152,7 @@ async def fetch_and_send_info(message: types.Message):
         button_text = f"{food_item.name}"
         keyboard.add(types.KeyboardButton(text=button_text))
 
-    await bot.send_message(chat_id=message.chat.id, text=' sdwe', reply_markup=keyboard)
+    await bot.send_message(chat_id=message.chat.id, text='Zayafkalar', reply_markup=keyboard)
 
 
 async def hamma_ovqatlar(message: types.Message):
