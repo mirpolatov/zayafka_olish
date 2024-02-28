@@ -21,7 +21,7 @@ dp.middleware.setup(LoggingMiddleware())
 
 storage = MemoryStorage()
 dp.storage = storage
-DATABASE_URL = 'sqlite:///food.db'
+DATABASE_URL = "postgresql://postgres:1@localhost:5432/menu"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
