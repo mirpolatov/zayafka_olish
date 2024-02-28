@@ -75,7 +75,7 @@ def get_db():
 
 @dp.message_handler(commands=['start', 'Back'])
 async def start_order(message: types.Message):
-    if message.from_user.id == 5772722670:
+    if message.from_user.id == 1327286056:
         await message.answer("Salom admin", reply_markup=main_rp)
     else:
 
@@ -177,7 +177,7 @@ async def show_food_details(message: types.Message):
     db = Session()
     selected_food_name = next(
         (food_item.name for food_item in db.query(Zayafka).all() if food_item.name in message.text), None)
-    if message.from_user.id != 1372665869 and message.from_user.id != 1228167458 and message.from_user.id != 5772722670:
+    if message.from_user.id != 1327286056:
         if selected_food_name:
             try:
 
@@ -295,7 +295,7 @@ async def process_address(message: types.Message, state: FSMContext):
             f"Buyurtmachining qo'shimcha fikr va mulohazasi: {data['fikr']}\n"
         )
 
-        admin_id = '5772722670'
+        admin_id = '1327286056'
         await bot.send_message(admin_id, f"New order:\n\n{order_info}", reply_markup=order_keyboart())
         await message.answer(
             "Ваш запрос отправлен администратору, наш администратор свяжется с вами в ближайшее время! Спасибо")
