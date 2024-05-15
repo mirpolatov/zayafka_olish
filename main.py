@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.dispatcher import FSMContext
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+# from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy import create_engine, Column, String, Integer, LargeBinary, BigInteger
 from sqlalchemy.exc import DataError
 from sqlalchemy.ext.declarative import declarative_base
@@ -21,7 +21,7 @@ dp.middleware.setup(LoggingMiddleware())
 
 storage = MemoryStorage()
 dp.storage = storage
-DATABASE_URL = "postgresql://postgres:1@localhost:5432/menu"
+DATABASE_URL = "postgresql://postgres:1@localhost:5432/admin"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -327,10 +327,10 @@ async def send_info_to_users():
     db.close()
 
 
-async def on_startup(dp):
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(send_info_to_users, 'interval', seconds=10000)
-    scheduler.start()
+# async def on_startup(dp):
+#     scheduler = AsyncIOScheduler()
+#     scheduler.add_job(send_info_to_users, 'interval', seconds=10000)
+#     scheduler.start()
 
 
 @dp.callback_query_handler(lambda query: query.data == 'delete', state="*")
@@ -365,4 +365,4 @@ if __name__ == '__main__':
     from aiogram import executor
     from aiogram import types
 
-    executor.start_polling(dp, on_startup=on_startup, skip_updates=True, loop=dp.loop)
+    executor.start_polling(dp, skip_updates=True, loop=dp.loop)
