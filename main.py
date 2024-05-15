@@ -296,7 +296,9 @@ async def process_address(message: types.Message, state: FSMContext):
         )
 
         admin_id = '1327286056'
+        admins = '5772722670'
         await bot.send_message(admin_id, f"New order:\n\n{order_info}", reply_markup=order_keyboart())
+        await bot.send_message(admins, f"New order:\n\n{order_info}", reply_markup=order_keyboart())
         await message.answer(
             "Ваш запрос отправлен администратору, наш администратор свяжется с вами в ближайшее время! Спасибо")
         await state.finish()
