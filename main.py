@@ -184,7 +184,7 @@ async def show_food_details(message: types.Message):
                 selected_food_item = db.query(Zayafka).filter(Zayafka.name == selected_food_name).first()
 
                 photo = selected_food_item.image
-                details_text = f"Zayafka nomi: {selected_food_item.name}\n"
+                details_text = f"{selected_food_item.name}\n"
                 await bot.send_photo(chat_id=message.chat.id, photo=photo, caption=details_text,
                                      reply_markup=order_keyboard(), )
             finally:
