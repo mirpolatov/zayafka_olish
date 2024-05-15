@@ -12,7 +12,7 @@ main_rp = ReplyKeyboardMarkup(keyboard=rp_button, resize_keyboard=True)
 
 def order_keyboard():
     ikm = InlineKeyboardMarkup()
-    ikm.add(InlineKeyboardButton('Zayafka qoldirish', callback_data='order_start'))
+    ikm.add(InlineKeyboardButton('Оставить заявку', callback_data='order_start'))
     return ikm
 
 
