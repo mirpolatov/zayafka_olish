@@ -1,18 +1,21 @@
 import random
-
+import pandas as pd
+from datetime import datetime, timedelta
+import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.dispatcher import FSMContext
 # from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from sqlalchemy import create_engine, Column, String, Integer, LargeBinary, BigInteger
+from sqlalchemy import create_engine, Column, String, Integer, LargeBinary, BigInteger, DateTime, func, TIMESTAMP
 from sqlalchemy.exc import DataError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql.functions import now
 
 from button import main_rp, order_keyboard, food_delete, order_keyboart
 
-API_TOKEN = "6801433229:AAERN0AU30U_TXTaz1K144hWGOMHDmnBU5w"
+API_TOKEN = "6801433229:AAGxu_bosviMySCVgrBDO5urzlHtT_azsco"
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
 bot = Bot(API_TOKEN)
@@ -21,7 +24,8 @@ dp.middleware.setup(LoggingMiddleware())
 
 storage = MemoryStorage()
 dp.storage = storage
-DATABASE_URL = "postgresql://postgres:1@localhost:5432/admin"
+# DATABASE_URL = "postgresql://postgres:1@localhost:5432/admin"
+DATABASE_URL = "sqlite:///hisobot.db"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -42,6 +46,16 @@ class Users(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(BigInteger)
     username = Column(String, default=None)
+
+
+class Hisobot(Base):
+    __tablename__ = 'hisobot'
+    id = Column(Integer, primary_key=True)
+    zayafka = Column(String, default=None)
+    fullname = Column(String, default=None)
+    address = Column(String, default=None)
+    fikr = Column(String, default=None)
+    created_at = Column(TIMESTAMP, server_default=func.now())
 
 
 Base.metadata.create_all(engine)
@@ -75,7 +89,7 @@ def get_db():
 
 @dp.message_handler(commands=['start', 'Back'])
 async def start_order(message: types.Message):
-    if message.from_user.id == 1327286056:
+    if message.from_user.id == 5772722670:
         await message.answer("Salom admin", reply_markup=main_rp)
     else:
 
@@ -294,10 +308,19 @@ async def process_address(message: types.Message, state: FSMContext):
             f"Buyurtmachinning bo'lim,labaratoriya va xona raqami: {data['address']}\n"
             f"Buyurtmachining qo'shimcha fikr va mulohazasi: {data['fikr']}\n"
         )
+        db = Session()
+        hisobot = Hisobot(
+            zayafka=data['name'],
+            fullname=data['fullname'],
+            address=data['address'],
+            fikr=data['fikr']
+        )
+        db.add(hisobot)
+        db.commit()
 
-        admin_id = '1327286056'
+        # admin_id = '1327286056'
         admins = '5772722670'
-        await bot.send_message(admin_id, f"New order:\n\n{order_info}", reply_markup=order_keyboart())
+        # await bot.send_message(admin_id, f"New order:\n\n{order_info}", reply_markup=order_keyboart())
         await bot.send_message(admins, f"New order:\n\n{order_info}", reply_markup=order_keyboart())
         await message.answer(
             "Ваш запрос отправлен администратору, наш администратор свяжется с вами в ближайшее время! Спасибо")
@@ -334,6 +357,225 @@ async def send_info_to_users():
 #     scheduler.add_job(send_info_to_users, 'interval', seconds=10000)
 #     scheduler.start()
 
+ADMIN_ID = 5772722670
+
+
+# @dp.message_handler(commands=['send_report'])
+# async def send_report(message: types.Message):
+#         # Query the database
+#         hisobot_data = session.query(Hisobot).all()
+#
+#         # Prepare data for the DataFrame
+#         data = [
+#             {
+#                 'ID': record.id,
+#                 'Zayafka': record.zayafka,
+#                 'Fullname': record.fullname,
+#                 'Address': record.address,
+#                 'Fikr': record.fikr,
+#
+#             }
+#             for record in hisobot_data
+#         ]
+#
+#         # Create a DataFrame
+#         df = pd.DataFrame(data)
+#
+#         # Save to Excel
+#         file_path = 'hisobot_report.xlsx'
+#         df.to_excel(file_path, index=False)
+#
+#         # Send the file to the admin
+#         await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
+#
+#         # Clean up
+#         os.remove(file_path)
+# else:
+#     await message.reply("You are not authorized to use this command.")
+
+@dp.message_handler(commands=['1_oy_hisobot'])
+async def send_report(message: types.Message):
+    one_month_ago = datetime.now() - timedelta(days=30)
+
+    hisobot_data = session.query(Hisobot).filter(Hisobot.created_at >= one_month_ago).all()
+
+    if not hisobot_data:
+        await bot.send_message(chat_id=ADMIN_ID, text="Bu oyda zayafka mavjud emas.")
+    else:
+        data = [
+            {
+                'ID': record.id,
+                'Zayafka': record.zayafka,
+                'Fullname': record.fullname,
+                'Address': record.address,
+                'Fikr': record.fikr,
+                'Vaqti': record.created_at
+            }
+            for record in hisobot_data
+        ]
+
+        df = pd.DataFrame(data)
+
+        file_path = '1-oylik_hisobot.xlsx'
+        with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+            worksheet = writer.sheets['Sheet1']
+            for col in worksheet.columns:
+                max_length = 0
+                column = col[0].column_letter
+                for cell in col:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                worksheet.column_dimensions[column].width = adjusted_width
+
+            # Manually adjust the width for the "Vaqti" column
+            worksheet.column_dimensions['F'].width = 20  # Set the width to an appropriate value
+
+        await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
+
+        os.remove(file_path)
+
+@dp.message_handler(commands=['3_oy_hisobot'])
+async def send_report(message: types.Message):
+    one_month_ago = datetime.now() - timedelta(days=90)
+
+    hisobot_data = session.query(Hisobot).filter(Hisobot.created_at >= one_month_ago).all()
+
+    if not hisobot_data:
+        await bot.send_message(chat_id=ADMIN_ID, text="Bu oyda zayafka mavjud emas.")
+    else:
+        data = [
+            {
+                'ID': record.id,
+                'Zayafka': record.zayafka,
+                'Fullname': record.fullname,
+                'Address': record.address,
+                'Fikr': record.fikr,
+                'Vaqti': record.created_at
+            }
+            for record in hisobot_data
+        ]
+
+        df = pd.DataFrame(data)
+
+        file_path = '3-oylik_hisobot.xlsx'
+        with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+            worksheet = writer.sheets['Sheet1']
+            for col in worksheet.columns:
+                max_length = 0
+                column = col[0].column_letter
+                for cell in col:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                worksheet.column_dimensions[column].width = adjusted_width
+
+            # Manually adjust the width for the "Vaqti" column
+            worksheet.column_dimensions['F'].width = 20  # Set the width to an appropriate value
+
+        await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
+
+        os.remove(file_path)
+
+@dp.message_handler(commands=['6_oy_hisobot'])
+async def send_report(message: types.Message):
+    one_month_ago = datetime.now() - timedelta(days=180)
+
+    hisobot_data = session.query(Hisobot).filter(Hisobot.created_at >= one_month_ago).all()
+
+    if not hisobot_data:
+        await bot.send_message(chat_id=ADMIN_ID, text="Bu oyda zayafka mavjud emas.")
+    else:
+        data = [
+            {
+                'ID': record.id,
+                'Zayafka': record.zayafka,
+                'Fullname': record.fullname,
+                'Address': record.address,
+                'Fikr': record.fikr,
+                'Vaqti': record.created_at
+            }
+            for record in hisobot_data
+        ]
+
+        df = pd.DataFrame(data)
+
+        file_path = '6-oy_hisobot.xlsx'
+        with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+            worksheet = writer.sheets['Sheet1']
+            for col in worksheet.columns:
+                max_length = 0
+                column = col[0].column_letter
+                for cell in col:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                worksheet.column_dimensions[column].width = adjusted_width
+
+            # Manually adjust the width for the "Vaqti" column
+            worksheet.column_dimensions['F'].width = 20  # Set the width to an appropriate value
+
+        await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
+
+        os.remove(file_path)
+
+@dp.message_handler(commands=['1_yillik_hisobot'])
+async def send_report(message: types.Message):
+    one_month_ago = datetime.now() - timedelta(days=365)
+
+    hisobot_data = session.query(Hisobot).filter(Hisobot.created_at >= one_month_ago).all()
+
+    if not hisobot_data:
+        await bot.send_message(chat_id=ADMIN_ID, text="Bu oyda zayafka mavjud emas.")
+    else:
+        data = [
+            {
+                'ID': record.id,
+                'Zayafka': record.zayafka,
+                'Fullname': record.fullname,
+                'Address': record.address,
+                'Fikr': record.fikr,
+                'Vaqti': record.created_at
+            }
+            for record in hisobot_data
+        ]
+
+        df = pd.DataFrame(data)
+
+        file_path = '1-yillik_hisobot.xlsx'
+        with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+            worksheet = writer.sheets['Sheet1']
+            for col in worksheet.columns:
+                max_length = 0
+                column = col[0].column_letter
+                for cell in col:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                worksheet.column_dimensions[column].width = adjusted_width
+
+            # Manually adjust the width for the "Vaqti" column
+            worksheet.column_dimensions['F'].width = 20  # Set the width to an appropriate value
+
+        await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
+
+        os.remove(file_path)
 
 @dp.callback_query_handler(lambda query: query.data == 'delete', state="*")
 async def process_delete(query: types.CallbackQuery, state: FSMContext):
