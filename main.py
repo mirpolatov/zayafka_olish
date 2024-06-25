@@ -432,8 +432,8 @@ async def send_report(message: types.Message):
                 adjusted_width = (max_length + 2)
                 worksheet.column_dimensions[column].width = adjusted_width
 
-            # Manually adjust the width for the "Vaqti" column
-            worksheet.column_dimensions['F'].width = 20  # Set the width to an appropriate value
+
+            worksheet.column_dimensions['F'].width = 20
 
         await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
 
@@ -478,8 +478,8 @@ async def send_report(message: types.Message):
                 adjusted_width = (max_length + 2)
                 worksheet.column_dimensions[column].width = adjusted_width
 
-            # Manually adjust the width for the "Vaqti" column
-            worksheet.column_dimensions['F'].width = 20  # Set the width to an appropriate value
+
+            worksheet.column_dimensions['F'].width = 20
 
         await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
 
@@ -524,8 +524,8 @@ async def send_report(message: types.Message):
                 adjusted_width = (max_length + 2)
                 worksheet.column_dimensions[column].width = adjusted_width
 
-            # Manually adjust the width for the "Vaqti" column
-            worksheet.column_dimensions['F'].width = 20  # Set the width to an appropriate value
+
+            worksheet.column_dimensions['F'].width = 20
 
         await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
 
@@ -570,8 +570,8 @@ async def send_report(message: types.Message):
                 adjusted_width = (max_length + 2)
                 worksheet.column_dimensions[column].width = adjusted_width
 
-            # Manually adjust the width for the "Vaqti" column
-            worksheet.column_dimensions['F'].width = 20  # Set the width to an appropriate value
+
+            worksheet.column_dimensions['F'].width = 20
 
         await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
 
