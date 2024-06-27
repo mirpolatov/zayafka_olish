@@ -69,6 +69,10 @@ class Form(StatesGroup):
     name = State()
 
 
+class Text(StatesGroup):
+    text = State()
+
+
 class Delete(StatesGroup):
     name = State()
 
@@ -334,8 +338,6 @@ async def delete_message(query: types.CallbackQuery):
     await bot.send_message(chat_id=chat_id, text=f' Buyurtma o''chirildi')
 
 
-
-
 ADMIN_ID = 1327286056
 
 
@@ -378,12 +380,12 @@ async def send_report(message: types.Message):
                 adjusted_width = (max_length + 2)
                 worksheet.column_dimensions[column].width = adjusted_width
 
-
             worksheet.column_dimensions['F'].width = 20
 
         await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
 
         os.remove(file_path)
+
 
 @dp.message_handler(commands=['3_oy_hisobot'])
 async def send_report(message: types.Message):
@@ -424,12 +426,12 @@ async def send_report(message: types.Message):
                 adjusted_width = (max_length + 2)
                 worksheet.column_dimensions[column].width = adjusted_width
 
-
             worksheet.column_dimensions['F'].width = 20
 
         await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
 
         os.remove(file_path)
+
 
 @dp.message_handler(commands=['6_oy_hisobot'])
 async def send_report(message: types.Message):
@@ -470,12 +472,12 @@ async def send_report(message: types.Message):
                 adjusted_width = (max_length + 2)
                 worksheet.column_dimensions[column].width = adjusted_width
 
-
             worksheet.column_dimensions['F'].width = 20
 
         await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
 
         os.remove(file_path)
+
 
 @dp.message_handler(commands=['1_yillik_hisobot'])
 async def send_report(message: types.Message):
@@ -516,12 +518,12 @@ async def send_report(message: types.Message):
                 adjusted_width = (max_length + 2)
                 worksheet.column_dimensions[column].width = adjusted_width
 
-
             worksheet.column_dimensions['F'].width = 20
 
         await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
 
         os.remove(file_path)
+
 
 @dp.callback_query_handler(lambda query: query.data == 'delete', state="*")
 async def process_delete(query: types.CallbackQuery, state: FSMContext):
@@ -549,6 +551,21 @@ async def process_delete(query: types.CallbackQuery, state: FSMContext):
                 await bot.delete_message(chat_id=chat_id, message_id=message_id)
         else:
             await bot.answer_callback_query(query.id, text='❌ Ma\'lumot topilmadi')
+
+
+@dp.message_handler(lambda message: message.text == "Guruhga habar jo'natish")
+async def start_food_registration(message: types.Message):
+    await message.answer("Iltimos,yuboriladigan habarni kiriting")
+    await Text.text.set()
+
+
+@dp.message_handler(state=Text.text)
+async def process_amount(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['text'] = message.text
+        order_info = data['text']
+    await bot.send_message(chat_id=-1002169133467, text=order_info)
+    await state.finish()
 
 
 if __name__ == '__main__':

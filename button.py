@@ -3,7 +3,8 @@ from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardBu
 
 rp_button = [
     [KeyboardButton(text="Zayafka qo'shish"),
-     KeyboardButton(text="Zayafka ko'rish")
+     KeyboardButton(text="Zayafka ko'rish"),
+     KeyboardButton(text="Guruhga habar jo'natish")
      ],
 ]
 
