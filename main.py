@@ -564,7 +564,8 @@ async def process_amount(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['text'] = message.text
         order_info = data['text']
-    await bot.send_message(chat_id=-1002169133467, text=order_info)
+    await bot.send_message(chat_id=-1001201500057, text=order_info)
+    await message.answer('Habar guruhga jo''natildi')
     await state.finish()
 
 
