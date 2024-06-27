@@ -15,7 +15,7 @@ from sqlalchemy.sql.functions import now
 
 from button import main_rp, order_keyboard, food_delete, order_keyboart
 
-API_TOKEN = "6801433229:AAF1NBmmnmYsFzYS8AkhS9w0ZwT4HyGJcGY"
+API_TOKEN = "6801433229:AAG7dn6C84TsuImrh5fb-DcSPWv2a3bhznk"
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
 bot = Bot(API_TOKEN)
