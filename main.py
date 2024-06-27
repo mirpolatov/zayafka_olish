@@ -336,7 +336,7 @@ async def delete_message(query: types.CallbackQuery):
 
 
 
-ADMIN_ID = 5772722670
+ADMIN_ID = 1327286056
 
 
 @dp.message_handler(commands=['1_oy_hisobot'])
