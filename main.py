@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.dispatcher import FSMContext
-# from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 from sqlalchemy import create_engine, Column, String, Integer, LargeBinary, BigInteger, DateTime, func, TIMESTAMP
 from sqlalchemy.exc import DataError
 from sqlalchemy.ext.declarative import declarative_base
@@ -15,7 +15,7 @@ from sqlalchemy.sql.functions import now
 
 from button import main_rp, order_keyboard, food_delete, order_keyboart
 
-API_TOKEN = "6801433229:AAGxu_bosviMySCVgrBDO5urzlHtT_azsco"
+API_TOKEN = "6583880436:AAEWuOszt34CRJ3nYJPSDSiGA8Z5HkVhlSs"
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
 bot = Bot(API_TOKEN)
@@ -24,8 +24,8 @@ dp.middleware.setup(LoggingMiddleware())
 
 storage = MemoryStorage()
 dp.storage = storage
-DATABASE_URL = "postgresql://postgres:1@localhost:5432/admin"
-# DATABASE_URL = "sqlite:///hisobot.db"
+# DATABASE_URL = "postgresql://postgres:1@localhost:5432/admin"
+DATABASE_URL = "sqlite:///hisobot.db"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -89,7 +89,7 @@ def get_db():
 
 @dp.message_handler(commands=['start', 'Back'])
 async def start_order(message: types.Message):
-    if message.from_user.id == 5772722670:
+    if message.from_user.id == 1327286056:
         await message.answer("Salom admin", reply_markup=main_rp)
     else:
 
@@ -177,7 +177,7 @@ async def hamma_ovqatlar(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
     for food_item in food_items:
-        button_text = f"{food_item.food_name}"
+        button_text = f"{food_item.name}"
         keyboard.add(types.KeyboardButton(text=button_text))
 
     keyboard.add(types.KeyboardButton(text="Back"))
@@ -319,7 +319,7 @@ async def process_address(message: types.Message, state: FSMContext):
         db.commit()
 
         # admin_id = '1327286056'
-        admins = '5772722670'
+        admins = '-1002169133467'
         # await bot.send_message(admin_id, f"New order:\n\n{order_info}", reply_markup=order_keyboart())
         await bot.send_message(admins, f"New order:\n\n{order_info}", reply_markup=order_keyboart())
         await message.answer(
@@ -334,64 +334,10 @@ async def delete_message(query: types.CallbackQuery):
     await bot.send_message(chat_id=chat_id, text=f' Buyurtma o''chirildi')
 
 
-async def send_info_to_users():
-    db = Session()
-    users = db.query(Users).all()
 
-    for user in users:
-        try:
-            await bot.send_message(user.user_id, "🛠 Web site and telegram bot creation service\n"
-                                                 "️ ️ We offer you the service of creating a website and telegram bots at reasonable prices\n"
-                                                 "👨🏻‍💻 Occupation: Python Developer\n"
-                                                 "💰 Salary: Negotiable\n"
-                                                 "💬 Contact: @mirpolatov_m\n"
-                                                 "📞 Phone: +998946032306")
-        except Exception as e:
-            print(f"Error sending message to user {user.user_id}: {e}")
-
-    db.close()
-
-
-# async def on_startup(dp):
-#     scheduler = AsyncIOScheduler()
-#     scheduler.add_job(send_info_to_users, 'interval', seconds=10000)
-#     scheduler.start()
 
 ADMIN_ID = 5772722670
 
-
-# @dp.message_handler(commands=['send_report'])
-# async def send_report(message: types.Message):
-#         # Query the database
-#         hisobot_data = session.query(Hisobot).all()
-#
-#         # Prepare data for the DataFrame
-#         data = [
-#             {
-#                 'ID': record.id,
-#                 'Zayafka': record.zayafka,
-#                 'Fullname': record.fullname,
-#                 'Address': record.address,
-#                 'Fikr': record.fikr,
-#
-#             }
-#             for record in hisobot_data
-#         ]
-#
-#         # Create a DataFrame
-#         df = pd.DataFrame(data)
-#
-#         # Save to Excel
-#         file_path = 'hisobot_report.xlsx'
-#         df.to_excel(file_path, index=False)
-#
-#         # Send the file to the admin
-#         await bot.send_document(chat_id=ADMIN_ID, document=open(file_path, 'rb'))
-#
-#         # Clean up
-#         os.remove(file_path)
-# else:
-#     await message.reply("You are not authorized to use this command.")
 
 @dp.message_handler(commands=['1_oy_hisobot'])
 async def send_report(message: types.Message):
