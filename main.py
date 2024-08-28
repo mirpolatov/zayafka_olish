@@ -1,5 +1,6 @@
 import random
 import pandas as pd
+from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import os
 from aiogram import Bot, Dispatcher, types
@@ -15,7 +16,9 @@ from sqlalchemy.sql.functions import now
 
 from button import main_rp, order_keyboard, food_delete, order_keyboart
 
-API_TOKEN = "6801433229:AAG7dn6C84TsuImrh5fb-DcSPWv2a3bhznk"
+load_dotenv(".env")
+
+API_TOKEN = os.getenv("TOKEN")
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
 bot = Bot(API_TOKEN)
@@ -24,8 +27,8 @@ dp.middleware.setup(LoggingMiddleware())
 
 storage = MemoryStorage()
 dp.storage = storage
-DATABASE_URL = "postgresql://postgres:1@localhost:5432/admin"
-# DATABASE_URL = "sqlite:///hisobot.db"
+# DATABASE_URL = "postgresql://postgres:1@localhost:5432/admin"
+DATABASE_URL = "sqlite:///hisobot.db"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
