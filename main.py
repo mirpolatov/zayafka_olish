@@ -27,8 +27,8 @@ dp.middleware.setup(LoggingMiddleware())
 
 storage = MemoryStorage()
 dp.storage = storage
-DATABASE_URL = "postgresql://postgres:1@localhost:5432/admin"
-# DATABASE_URL = "sqlite:///hisobot.db"
+# DATABASE_URL = "postgresql://postgres:1@localhost:5432/admin"
+DATABASE_URL = "sqlite:///hisobot.db"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
